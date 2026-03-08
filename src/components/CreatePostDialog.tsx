@@ -80,7 +80,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
             </>
           )}
           <div className="space-y-2">
-            <Label>{isAlumni ? 'Description *' : 'What\'s on your mind? *'}</Label>
+            <Label>{canPostOpportunity ? 'Description *' : 'What\'s on your mind? *'}</Label>
             <Textarea
               value={content}
               onChange={e => setContent(e.target.value.slice(0, 500))}
