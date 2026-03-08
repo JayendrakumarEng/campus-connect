@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard, Trophy, User, Menu } from 'lucide-react';
+import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard, Trophy, User, Menu, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
@@ -26,6 +26,7 @@ const Navbar = () => {
   const mainLinks = [
     { to: '/feed', label: 'Feed', icon: Home },
     { to: '/explore', label: 'Explore', icon: Compass },
+    { to: '/messages', label: 'Messages', icon: MessageSquare },
     { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
     { to: '/success-stories', label: 'Stories', icon: Trophy },
     { to: '/college', label: 'College', icon: School },

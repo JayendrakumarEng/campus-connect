@@ -17,6 +17,7 @@ import Settings from "./pages/Settings";
 import College from "./pages/College";
 import StaffDashboard from "./pages/StaffDashboard";
 import SuccessStories from "./pages/SuccessStories";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/college" element={<ProtectedRoute><College /></ProtectedRoute>} />
             <Route path="/staff" element={<ProtectedRoute><StaffDashboard /></ProtectedRoute>} />
             <Route path="/success-stories" element={<ProtectedRoute><SuccessStories /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
