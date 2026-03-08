@@ -26,7 +26,7 @@ const Bookmarks = () => {
         const ids = bookmarks.map(b => b.post_id);
         const { data } = await supabase
           .from('posts')
-          .select('*, profiles(full_name, avatar_url, role)')
+          .select('*, profiles!posts_author_id_fkey(full_name, avatar_url, role)')
           .in('id', ids)
           .order('created_at', { ascending: false });
         setPosts((data as any) || []);

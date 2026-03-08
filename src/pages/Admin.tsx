@@ -22,7 +22,7 @@ const Admin = () => {
   const fetchData = async () => {
     const [alumniRes, postsRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('role', 'alumni').eq('is_verified', false),
-      supabase.from('posts').select('*, profiles(full_name, role)').eq('is_approved', false),
+      supabase.from('posts').select('*, profiles!posts_author_id_fkey(full_name, role)').eq('is_approved', false),
     ]);
     setUnverifiedAlumni(alumniRes.data || []);
     setPendingPosts((postsRes.data as any) || []);
