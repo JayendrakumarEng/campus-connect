@@ -307,6 +307,9 @@ export type Database = {
           id: string
           is_verified: boolean | null
           linkedin_url: string | null
+          portfolio_url: string | null
+          projects: Json | null
+          resume_url: string | null
           role: string | null
           skills: string[] | null
           status: string | null
@@ -325,6 +328,9 @@ export type Database = {
           id: string
           is_verified?: boolean | null
           linkedin_url?: string | null
+          portfolio_url?: string | null
+          projects?: Json | null
+          resume_url?: string | null
           role?: string | null
           skills?: string[] | null
           status?: string | null
@@ -343,12 +349,65 @@ export type Database = {
           id?: string
           is_verified?: boolean | null
           linkedin_url?: string | null
+          portfolio_url?: string | null
+          projects?: Json | null
+          resume_url?: string | null
           role?: string | null
           skills?: string[] | null
           status?: string | null
           year?: string | null
         }
         Relationships: []
+      }
+      success_stories: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          id: string
+          is_approved: boolean | null
+          package: string | null
+          role_title: string
+          story: string
+          tips: string | null
+          title: string
+          user_id: string
+          year_of_placement: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          package?: string | null
+          role_title: string
+          story: string
+          tips?: string | null
+          title: string
+          user_id: string
+          year_of_placement?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          package?: string | null
+          role_title?: string
+          story?: string
+          tips?: string | null
+          title?: string
+          user_id?: string
+          year_of_placement?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "success_stories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
