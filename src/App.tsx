@@ -17,6 +17,7 @@ import Settings from "./pages/Settings";
 import College from "./pages/College";
 import StaffDashboard from "./pages/StaffDashboard";
 import SuccessStories from "./pages/SuccessStories";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
