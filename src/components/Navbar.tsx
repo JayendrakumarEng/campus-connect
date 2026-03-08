@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard, Trophy, User, Menu } from 'lucide-react';
+import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard, Trophy, User, Menu, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
