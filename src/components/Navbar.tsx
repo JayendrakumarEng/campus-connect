@@ -26,6 +26,7 @@ const Navbar = () => {
   const mainLinks = [
     { to: '/feed', label: 'Feed', icon: Home },
     { to: '/explore', label: 'Explore', icon: Compass },
+    { to: '/messages', label: 'Messages', icon: MessageSquare },
     { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
     { to: '/success-stories', label: 'Stories', icon: Trophy },
     { to: '/college', label: 'College', icon: School },
