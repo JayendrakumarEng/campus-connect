@@ -65,6 +65,11 @@ const staffThoughts: StaffThought[] = [
     thought: 'The best students are not the toppers — they\'re the ones who never stop being curious about how things work.',
   },
   {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Coding is thinking made visible. Master the logic first, then the syntax follows. And never underestimate networking — your next opportunity is one connection away.',
+  },
+  {
     name: 'Dr. Meera Joshi',
     department: 'Chemistry',
     thought: 'Your college years are the best time to take risks. Start a project, join a club, enter competitions. Regret nothing.',
