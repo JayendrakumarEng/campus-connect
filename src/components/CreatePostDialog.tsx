@@ -48,7 +48,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     if (error) {
       toast.error('Failed to create post');
     } else {
-      toast.success(isAlumni ? 'Opportunity submitted for review!' : 'Post published!');
+      toast.success(canPostOpportunity && profile?.role === 'alumni' ? 'Opportunity submitted for review!' : 'Post published!');
       setContent('');
       setCompanyName('');
       setRoleTitle('');
