@@ -47,6 +47,95 @@ export type Database = {
           },
         ]
       }
+      endorsements: {
+        Row: {
+          created_at: string | null
+          from_user_id: string
+          id: string
+          message: string | null
+          skill: string
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          from_user_id: string
+          id?: string
+          message?: string | null
+          skill: string
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          from_user_id?: string
+          id?: string
+          message?: string | null
+          skill?: string
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "endorsements_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "endorsements_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          department: string | null
+          description: string
+          event_date: string
+          event_type: string | null
+          id: string
+          is_active: boolean | null
+          title: string
+          venue: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          department?: string | null
+          description: string
+          event_date: string
+          event_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          venue?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          department?: string | null
+          description?: string
+          event_date?: string
+          event_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string | null
@@ -74,6 +163,83 @@ export type Database = {
           {
             foreignKeyName: "follows_following_id_fkey"
             columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      poll_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          option_index: number
+          poll_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          option_index: number
+          poll_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          option_index?: number
+          poll_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "poll_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      polls: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          options: Json
+          question: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          question: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          options?: Json
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "polls_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -134,6 +300,7 @@ export type Database = {
           branch: string | null
           company: string | null
           created_at: string | null
+          department: string | null
           email: string | null
           full_name: string | null
           github_url: string | null
@@ -151,6 +318,7 @@ export type Database = {
           branch?: string | null
           company?: string | null
           created_at?: string | null
+          department?: string | null
           email?: string | null
           full_name?: string | null
           github_url?: string | null
@@ -168,6 +336,7 @@ export type Database = {
           branch?: string | null
           company?: string | null
           created_at?: string | null
+          department?: string | null
           email?: string | null
           full_name?: string | null
           github_url?: string | null

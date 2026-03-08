@@ -16,7 +16,7 @@ interface Props {
 
 const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
   const { user, profile } = useAuth();
-  const isAlumni = profile?.role === 'alumni';
+  const canPostOpportunity = profile?.role === 'alumni' || profile?.role === 'staff' || profile?.role === 'admin';
 
   const [content, setContent] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -33,11 +33,11 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     const post: any = {
       author_id: user.id,
       content,
-      type: isAlumni ? 'opportunity' : 'update',
-      is_approved: !isAlumni,
+      type: canPostOpportunity ? 'opportunity' : 'update',
+      is_approved: profile?.role === 'staff' || profile?.role === 'admin' ? true : !canPostOpportunity ? true : false,
     };
 
-    if (isAlumni) {
+    if (canPostOpportunity) {
       post.company_name = companyName;
       post.role_title = roleTitle;
       post.apply_link = applyLink || null;
@@ -48,7 +48,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     if (error) {
       toast.error('Failed to create post');
     } else {
-      toast.success(isAlumni ? 'Opportunity submitted for review!' : 'Post published!');
+      toast.success(canPostOpportunity && profile?.role === 'alumni' ? 'Opportunity submitted for review!' : 'Post published!');
       setContent('');
       setCompanyName('');
       setRoleTitle('');
@@ -64,10 +64,10 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isAlumni ? 'Post an Opportunity' : 'Create a Post'}</DialogTitle>
+          <DialogTitle>{canPostOpportunity ? 'Post an Opportunity' : 'Create a Post'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isAlumni && (
+          {canPostOpportunity && (
             <>
               <div className="space-y-2">
                 <Label>Company Name *</Label>
@@ -80,17 +80,17 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
             </>
           )}
           <div className="space-y-2">
-            <Label>{isAlumni ? 'Description *' : 'What\'s on your mind? *'}</Label>
+            <Label>{canPostOpportunity ? 'Description *' : 'What\'s on your mind? *'}</Label>
             <Textarea
               value={content}
               onChange={e => setContent(e.target.value.slice(0, 500))}
               required
               rows={4}
-              placeholder={isAlumni ? 'Describe the role, requirements...' : 'Share an update...'}
+              placeholder={canPostOpportunity ? 'Describe the role, requirements...' : 'Share an update...'}
             />
             <p className="text-xs text-muted-foreground text-right">{content.length}/500</p>
           </div>
-          {isAlumni && (
+          {canPostOpportunity && (
             <>
               <div className="space-y-2">
                 <Label>Apply Link</Label>
@@ -103,7 +103,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
             </>
           )}
           <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? 'Posting...' : isAlumni ? 'Submit for Review' : 'Post'}
+            {saving ? 'Posting...' : canPostOpportunity && profile?.role === 'alumni' ? 'Submit for Review' : 'Post'}
           </Button>
         </form>
       </DialogContent>

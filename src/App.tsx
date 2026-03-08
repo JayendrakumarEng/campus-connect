@@ -15,6 +15,7 @@ import Bookmarks from "./pages/Bookmarks";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
 import College from "./pages/College";
+import StaffDashboard from "./pages/StaffDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/college" element={<ProtectedRoute><College /></ProtectedRoute>} />
+            <Route path="/staff" element={<ProtectedRoute><StaffDashboard /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
