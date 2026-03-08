@@ -151,6 +151,62 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        {/* Resume & Portfolio */}
+        {(profile.resume_url || profile.portfolio_url || (profile.projects && JSON.parse(profile.projects || '[]').length > 0)) && (
+          <Card className="mt-6">
+            <CardContent className="pt-6">
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <FolderOpen className="h-5 w-5 text-primary" /> Portfolio
+              </h2>
+              <div className="space-y-3">
+                {profile.resume_url && (
+                  <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg border p-3 hover:bg-accent transition-colors">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium text-foreground">View Resume</span>
+                    <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />
+                  </a>
+                )}
+                {profile.portfolio_url && (
+                  <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg border p-3 hover:bg-accent transition-colors">
+                    <FolderOpen className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium text-foreground">Portfolio Website</span>
+                    <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />
+                  </a>
+                )}
+                {(() => {
+                  try {
+                    const projs = JSON.parse(profile.projects || '[]');
+                    if (projs.length > 0) {
+                      return (
+                        <div>
+                          <h3 className="text-sm font-semibold text-foreground mb-2">Projects</h3>
+                          <div className="space-y-2">
+                            {projs.map((p: any, i: number) => (
+                              <div key={i} className="rounded-lg border p-3">
+                                <p className="text-sm font-semibold text-foreground">{p.title}</p>
+                                {p.description && <p className="text-xs text-muted-foreground mt-0.5">{p.description}</p>}
+                                <div className="flex items-center gap-3 mt-1">
+                                  {p.tech && <span className="text-xs text-primary">{p.tech}</span>}
+                                  {p.url && (
+                                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                                      View <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  } catch { return null; }
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <h2 className="mt-8 mb-4 text-lg font-semibold">Posts</h2>
         {posts.length === 0 ? (
           <p className="text-muted-foreground text-sm">No posts yet.</p>

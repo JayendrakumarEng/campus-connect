@@ -173,6 +173,11 @@ const Settings = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Resume & Portfolio Section */}
+        <div className="mt-6">
+          <ResumePortfolioSection />
+        </div>
       </main>
     </div>
   );
