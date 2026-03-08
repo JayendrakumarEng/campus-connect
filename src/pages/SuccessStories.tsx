@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Trophy, Plus, Building, Briefcase, Lightbulb, Quote, Star } from 'lucide-react';
+import { Trophy, Plus, Building, Briefcase, Lightbulb, Quote, Star, Heart, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -35,6 +36,7 @@ interface Story {
 
 const SuccessStories = () => {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -46,6 +48,9 @@ const SuccessStories = () => {
   const [tips, setTips] = useState('');
   const [yearOfPlacement, setYearOfPlacement] = useState('');
   const [saving, setSaving] = useState(false);
+  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [userLikes, setUserLikes] = useState<Set<string>>(new Set());
+  const [likingStory, setLikingStory] = useState<string | null>(null);
 
   const fetchStories = async () => {
     const { data } = await supabase
@@ -57,7 +62,94 @@ const SuccessStories = () => {
     setLoading(false);
   };
 
+  const fetchLikes = async (storyIds: string[]) => {
+    if (storyIds.length === 0) return;
+
+    // Fetch all likes counts
+    const { data: allLikes } = await supabase
+      .from('story_likes')
+      .select('story_id')
+      .in('story_id', storyIds);
+
+    const countsMap: Record<string, number> = {};
+    (allLikes || []).forEach((l: any) => {
+      countsMap[l.story_id] = (countsMap[l.story_id] || 0) + 1;
+    });
+    setLikes(countsMap);
+
+    // Fetch user's own likes
+    if (user) {
+      const { data: myLikes } = await supabase
+        .from('story_likes')
+        .select('story_id')
+        .eq('user_id', user.id)
+        .in('story_id', storyIds);
+      setUserLikes(new Set((myLikes || []).map((l: any) => l.story_id)));
+    }
+  };
+
   useEffect(() => { fetchStories(); }, []);
+
+  useEffect(() => {
+    if (stories.length > 0) {
+      fetchLikes(stories.map(s => s.id));
+    }
+  }, [stories, user]);
+
+  const toggleLike = async (storyId: string) => {
+    if (!user) {
+      toast.error('Please sign in to like stories');
+      return;
+    }
+    setLikingStory(storyId);
+
+    if (userLikes.has(storyId)) {
+      await supabase.from('story_likes').delete().eq('user_id', user.id).eq('story_id', storyId);
+      setUserLikes(prev => { const s = new Set(prev); s.delete(storyId); return s; });
+      setLikes(prev => ({ ...prev, [storyId]: (prev[storyId] || 1) - 1 }));
+    } else {
+      await supabase.from('story_likes').insert({ user_id: user.id, story_id: storyId });
+      setUserLikes(prev => new Set(prev).add(storyId));
+      setLikes(prev => ({ ...prev, [storyId]: (prev[storyId] || 0) + 1 }));
+    }
+    setLikingStory(null);
+  };
+
+  const askQuery = async (authorId: string, authorName: string) => {
+    if (!user) {
+      toast.error('Please sign in to send a query');
+      return;
+    }
+    if (authorId === user.id) {
+      toast.info("That's your own story!");
+      return;
+    }
+
+    // Check if conversation already exists
+    const { data: existing } = await supabase
+      .from('conversations')
+      .select('id')
+      .or(`and(participant_1.eq.${user.id},participant_2.eq.${authorId}),and(participant_1.eq.${authorId},participant_2.eq.${user.id})`);
+
+    if (existing && existing.length > 0) {
+      toast.success(`Opening chat with ${authorName}`);
+      navigate('/messages');
+      return;
+    }
+
+    // Create new conversation
+    const { error } = await supabase
+      .from('conversations')
+      .insert({ participant_1: user.id, participant_2: authorId });
+
+    if (error) {
+      toast.error('Could not start conversation');
+      return;
+    }
+
+    toast.success(`Chat started with ${authorName}! Redirecting...`);
+    navigate('/messages');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,9 +251,39 @@ const SuccessStories = () => {
                         </div>
                       )}
 
-                      <p className="mt-3 text-xs text-muted-foreground">
-                        {s.created_at && formatDistanceToNow(new Date(s.created_at), { addSuffix: true })}
-                      </p>
+                      {/* Like & Query Actions */}
+                      <div className="mt-4 flex items-center gap-4 border-t pt-3">
+                        <button
+                          onClick={() => toggleLike(s.id)}
+                          disabled={likingStory === s.id}
+                          className="flex items-center gap-1.5 text-sm transition-colors hover:text-red-500 group"
+                        >
+                          <Heart
+                            className={`h-5 w-5 transition-all ${
+                              userLikes.has(s.id)
+                                ? 'fill-red-500 text-red-500 scale-110'
+                                : 'text-muted-foreground group-hover:text-red-500'
+                            }`}
+                          />
+                          <span className={userLikes.has(s.id) ? 'text-red-500 font-medium' : 'text-muted-foreground'}>
+                            {likes[s.id] || 0}
+                          </span>
+                        </button>
+
+                        {user && s.user_id !== user.id && (
+                          <button
+                            onClick={() => askQuery(s.user_id, s.profiles?.full_name || 'Author')}
+                            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                          >
+                            <MessageCircle className="h-5 w-5 group-hover:text-primary transition-colors" />
+                            <span>Ask a Query</span>
+                          </button>
+                        )}
+
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {s.created_at && formatDistanceToNow(new Date(s.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
