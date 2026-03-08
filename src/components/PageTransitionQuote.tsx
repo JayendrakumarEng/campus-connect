@@ -122,10 +122,11 @@ const getRandomThought = (): StaffThought => {
     return chosen;
   }
 
+  const sbmIndices = new Set(sbmQuotes.map(q => staffThoughts.indexOf(q)));
   let idx: number;
   do {
     idx = Math.floor(Math.random() * staffThoughts.length);
-  } while ((idx === lastIndex || idx === DR_SBM_INDEX) && staffThoughts.length > 2);
+  } while ((idx === lastIndex || sbmIndices.has(idx)) && staffThoughts.length > 2);
   lastIndex = idx;
   return staffThoughts[idx];
 };
