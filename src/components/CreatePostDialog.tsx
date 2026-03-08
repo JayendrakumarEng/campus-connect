@@ -103,7 +103,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
             </>
           )}
           <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? 'Posting...' : isAlumni ? 'Submit for Review' : 'Post'}
+            {saving ? 'Posting...' : canPostOpportunity && profile?.role === 'alumni' ? 'Submit for Review' : 'Post'}
           </Button>
         </form>
       </DialogContent>
