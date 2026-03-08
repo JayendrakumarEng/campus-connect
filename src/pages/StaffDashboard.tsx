@@ -42,7 +42,7 @@ const StaffDashboard = () => {
               <Award className="h-4 w-4" /> Endorse
             </TabsTrigger>
             <TabsTrigger value="approve" className="flex-1 gap-1">
-              <FileText className="h-4 w-4" /> Approve
+              <CheckCircle className="h-4 w-4" /> Approve
             </TabsTrigger>
           </TabsList>
 
