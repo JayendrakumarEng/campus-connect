@@ -43,7 +43,7 @@ const Feed = () => {
   const fetchPosts = async () => {
     const { data } = await supabase
       .from('posts')
-      .select('*, profiles(full_name, avatar_url, role)')
+      .select('*, profiles!posts_author_id_fkey(full_name, avatar_url, role)')
       .eq('is_approved', true)
       .order('created_at', { ascending: false });
     setPosts((data as any) || []);
