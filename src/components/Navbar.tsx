@@ -47,6 +47,10 @@ const Navbar = () => {
             <Bookmark className="h-4 w-4" />
             <span className="hidden md:inline">Bookmarks</span>
           </Link>
+          <Link to="/success-stories" className={navLinkClass('/success-stories')}>
+            <Trophy className="h-4 w-4" />
+            <span className="hidden md:inline">Stories</span>
+          </Link>
           <Link to="/college" className={navLinkClass('/college')}>
             <School className="h-4 w-4" />
             <span className="hidden md:inline">College</span>
