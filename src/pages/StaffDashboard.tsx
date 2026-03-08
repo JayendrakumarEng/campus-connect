@@ -30,7 +30,7 @@ const StaffDashboard = () => {
         <Tabs defaultValue="posts">
           <TabsList className="mb-6 w-full flex-wrap h-auto gap-1">
             <TabsTrigger value="posts" className="flex-1 gap-1">
-              <Briefcase className="h-4 w-4" /> Opportunities
+              <FileText className="h-4 w-4" /> My Posts
             </TabsTrigger>
             <TabsTrigger value="events" className="flex-1 gap-1">
               <Calendar className="h-4 w-4" /> Events
