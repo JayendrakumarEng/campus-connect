@@ -104,15 +104,22 @@ const staffThoughts: StaffThought[] = [
 let lastIndex = -1;
 let transitionCount = 0;
 
-const DR_SBM_INDEX = staffThoughts.findIndex(s => s.name.includes('SatyaBharata'));
+const sbmQuotes = staffThoughts.filter(s => s.name.includes('SatyaBharata'));
+let lastSbmIndex = -1;
 
 const getRandomThought = (): StaffThought => {
   transitionCount++;
 
-  // Show Dr. SBM's quote every 3rd transition (3rd, 6th, 9th...)
-  if (transitionCount % 3 === 0 && DR_SBM_INDEX !== -1) {
-    lastIndex = DR_SBM_INDEX;
-    return staffThoughts[DR_SBM_INDEX];
+  // Show a Dr. SBM quote every 3rd transition, rotating through his quotes
+  if (transitionCount % 3 === 0 && sbmQuotes.length > 0) {
+    let idx: number;
+    do {
+      idx = Math.floor(Math.random() * sbmQuotes.length);
+    } while (idx === lastSbmIndex && sbmQuotes.length > 1);
+    lastSbmIndex = idx;
+    const chosen = sbmQuotes[idx];
+    lastIndex = staffThoughts.indexOf(chosen);
+    return chosen;
   }
 
   let idx: number;
