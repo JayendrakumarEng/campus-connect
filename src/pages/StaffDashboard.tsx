@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Navigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Briefcase, Calendar, BarChart3, Award, FileText } from 'lucide-react';
+import { FileText, Calendar, BarChart3, Award, CheckCircle } from 'lucide-react';
 import StaffPostsTab from '@/components/staff/StaffPostsTab';
 import StaffEventsTab from '@/components/staff/StaffEventsTab';
 import StaffPollsTab from '@/components/staff/StaffPollsTab';
