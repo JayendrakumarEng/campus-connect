@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SkillsInput from '@/components/SkillsInput';
+import ResumePortfolioSection from '@/components/ResumePortfolioSection';
 import Navbar from '@/components/Navbar';
 import { Camera } from 'lucide-react';
 import { toast } from 'sonner';
@@ -172,6 +173,11 @@ const Settings = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Resume & Portfolio Section */}
+        <div className="mt-6">
+          <ResumePortfolioSection />
+        </div>
       </main>
     </div>
   );

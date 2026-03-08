@@ -18,6 +18,10 @@ interface Profile {
   avatar_url: string | null;
   is_verified: boolean | null;
   created_at: string | null;
+  department: string | null;
+  resume_url: string | null;
+  portfolio_url: string | null;
+  projects: any;
 }
 
 interface AuthContextType {

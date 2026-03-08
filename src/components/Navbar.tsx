@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard } from 'lucide-react';
+import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon, School, LayoutDashboard, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const Navbar = () => {
@@ -46,6 +46,10 @@ const Navbar = () => {
           <Link to="/bookmarks" className={navLinkClass('/bookmarks')}>
             <Bookmark className="h-4 w-4" />
             <span className="hidden md:inline">Bookmarks</span>
+          </Link>
+          <Link to="/success-stories" className={navLinkClass('/success-stories')}>
+            <Trophy className="h-4 w-4" />
+            <span className="hidden md:inline">Stories</span>
           </Link>
           <Link to="/college" className={navLinkClass('/college')}>
             <School className="h-4 w-4" />
