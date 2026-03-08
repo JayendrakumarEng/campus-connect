@@ -86,7 +86,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
               onChange={e => setContent(e.target.value.slice(0, 500))}
               required
               rows={4}
-              placeholder={isAlumni ? 'Describe the role, requirements...' : 'Share an update...'}
+              placeholder={canPostOpportunity ? 'Describe the role, requirements...' : 'Share an update...'}
             />
             <p className="text-xs text-muted-foreground text-right">{content.length}/500</p>
           </div>
