@@ -9,7 +9,7 @@ import RoleBadge from '@/components/RoleBadge';
 import StatusBadge from '@/components/StatusBadge';
 import SkillTag from '@/components/SkillTag';
 import Navbar from '@/components/Navbar';
-import { UserPlus, UserCheck, Github, Linkedin, Pencil, Calendar, ExternalLink, Building, CheckCircle } from 'lucide-react';
+import { UserPlus, UserCheck, Github, Linkedin, Pencil, Calendar, ExternalLink, Building, CheckCircle, FileText, FolderOpen } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
