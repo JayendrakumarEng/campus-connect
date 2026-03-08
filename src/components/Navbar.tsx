@@ -3,11 +3,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap } from 'lucide-react';
+import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, Moon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
   const location = useLocation();
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [dark]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -45,33 +55,44 @@ const Navbar = () => {
           )}
         </nav>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={profile?.avatar_url || ''} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  {profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '?'}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem asChild>
-              <Link to={`/profile/${user?.id}`} className="flex items-center gap-2">
-                <Home className="h-4 w-4" /> My Profile
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" /> Settings
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 text-destructive">
-              <LogOut className="h-4 w-4" /> Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setDark(d => !d)}
+            className="h-9 w-9"
+          >
+            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={profile?.avatar_url || ''} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    {profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '?'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link to={`/profile/${user?.id}`} className="flex items-center gap-2">
+                  <Home className="h-4 w-4" /> My Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" /> Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 text-destructive">
+                <LogOut className="h-4 w-4" /> Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

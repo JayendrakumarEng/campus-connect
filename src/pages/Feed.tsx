@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import RoleBadge from '@/components/RoleBadge';
 import Navbar from '@/components/Navbar';
 import CreatePostDialog from '@/components/CreatePostDialog';
-import { Plus, Heart, Bookmark, BookmarkCheck, ExternalLink, Calendar } from 'lucide-react';
+import { Plus, Heart, Bookmark, BookmarkCheck, ExternalLink, Calendar, Search } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -37,6 +38,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [tab, setTab] = useState('all');
+  const [search, setSearch] = useState('');
 
   const fetchPosts = async () => {
     const { data } = await supabase
@@ -79,12 +81,33 @@ const Feed = () => {
     });
   };
 
-  const filtered = tab === 'opportunities' ? posts.filter(p => p.type === 'opportunity') : posts;
+  const filtered = posts.filter(p => {
+    if (tab === 'opportunities' && p.type !== 'opportunity') return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const matchesContent = p.content?.toLowerCase().includes(q);
+      const matchesAuthor = p.profiles?.full_name?.toLowerCase().includes(q);
+      const matchesCompany = p.company_name?.toLowerCase().includes(q);
+      const matchesRole = p.role_title?.toLowerCase().includes(q);
+      if (!matchesContent && !matchesAuthor && !matchesCompany && !matchesRole) return false;
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container max-w-2xl py-6">
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search posts by content or author..."
+            className="pl-9"
+          />
+        </div>
+
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6 w-full">
             <TabsTrigger value="all" className="flex-1">All Posts</TabsTrigger>
@@ -97,7 +120,9 @@ const Feed = () => {
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
             ) : filtered.length === 0 ? (
-              <p className="py-12 text-center text-muted-foreground">No posts yet. Be the first!</p>
+              <p className="py-12 text-center text-muted-foreground">
+                {search ? 'No posts match your search.' : 'No posts yet. Be the first!'}
+              </p>
             ) : (
               filtered.map(post => (
                 <Card key={post.id} className="animate-fade-in">
