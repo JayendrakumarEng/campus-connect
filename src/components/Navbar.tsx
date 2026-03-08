@@ -51,6 +51,12 @@ const Navbar = () => {
             <School className="h-4 w-4" />
             <span className="hidden md:inline">College</span>
           </Link>
+          {(profile?.role === 'staff' || profile?.role === 'admin') && (
+            <Link to="/staff" className={navLinkClass('/staff')}>
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden md:inline">Dashboard</span>
+            </Link>
+          )}
           {profile?.role === 'admin' && (
             <Link to="/admin" className={navLinkClass('/admin')}>
               <Shield className="h-4 w-4" />
