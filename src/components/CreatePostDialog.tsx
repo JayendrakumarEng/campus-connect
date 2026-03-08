@@ -64,7 +64,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isAlumni ? 'Post an Opportunity' : 'Create a Post'}</DialogTitle>
+          <DialogTitle>{canPostOpportunity ? 'Post an Opportunity' : 'Create a Post'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {isAlumni && (
