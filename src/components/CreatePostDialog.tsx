@@ -33,11 +33,11 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
     const post: any = {
       author_id: user.id,
       content,
-      type: isAlumni ? 'opportunity' : 'update',
-      is_approved: !isAlumni,
+      type: canPostOpportunity ? 'opportunity' : 'update',
+      is_approved: profile?.role === 'staff' || profile?.role === 'admin' ? true : !canPostOpportunity ? true : false,
     };
 
-    if (isAlumni) {
+    if (canPostOpportunity) {
       post.company_name = companyName;
       post.role_title = roleTitle;
       post.apply_link = applyLink || null;
