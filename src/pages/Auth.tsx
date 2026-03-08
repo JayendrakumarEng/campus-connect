@@ -109,8 +109,8 @@ const Auth = () => {
             {mode === 'signup' && (
               <div className="space-y-2">
                 <Label>I am a...</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(['student', 'alumni'] as const).map(r => (
+                <div className="grid grid-cols-3 gap-2">
+                  {(['student', 'alumni', 'staff'] as const).map(r => (
                     <button
                       key={r}
                       type="button"

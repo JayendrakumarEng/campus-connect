@@ -47,6 +47,10 @@ const Navbar = () => {
             <Bookmark className="h-4 w-4" />
             <span className="hidden md:inline">Bookmarks</span>
           </Link>
+          <Link to="/college" className={navLinkClass('/college')}>
+            <School className="h-4 w-4" />
+            <span className="hidden md:inline">College</span>
+          </Link>
           {profile?.role === 'admin' && (
             <Link to="/admin" className={navLinkClass('/admin')}>
               <Shield className="h-4 w-4" />
