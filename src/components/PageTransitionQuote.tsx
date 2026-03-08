@@ -77,12 +77,23 @@ const staffThoughts: StaffThought[] = [
 ];
 
 let lastIndex = -1;
+let transitionCount = 0;
+
+const DR_SBM_INDEX = staffThoughts.findIndex(s => s.name.includes('SatyaBharata'));
 
 const getRandomThought = (): StaffThought => {
+  transitionCount++;
+
+  // Show Dr. SBM's quote every 3rd transition (3rd, 6th, 9th...)
+  if (transitionCount % 3 === 0 && DR_SBM_INDEX !== -1) {
+    lastIndex = DR_SBM_INDEX;
+    return staffThoughts[DR_SBM_INDEX];
+  }
+
   let idx: number;
   do {
     idx = Math.floor(Math.random() * staffThoughts.length);
-  } while (idx === lastIndex && staffThoughts.length > 1);
+  } while ((idx === lastIndex || idx === DR_SBM_INDEX) && staffThoughts.length > 2);
   lastIndex = idx;
   return staffThoughts[idx];
 };
@@ -104,7 +115,7 @@ const PageTransitionQuote = () => {
     if (shouldShowTransition(prevPath, location.pathname)) {
       setThought(getRandomThought());
       setVisible(true);
-      const timer = setTimeout(() => setVisible(false), 3500);
+      const timer = setTimeout(() => setVisible(false), 2200);
       return () => clearTimeout(timer);
     }
     setPrevPath(location.pathname);
