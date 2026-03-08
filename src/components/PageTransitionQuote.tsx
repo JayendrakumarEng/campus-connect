@@ -104,7 +104,7 @@ const PageTransitionQuote = () => {
     if (shouldShowTransition(prevPath, location.pathname)) {
       setThought(getRandomThought());
       setVisible(true);
-      const timer = setTimeout(() => setVisible(false), 1800);
+      const timer = setTimeout(() => setVisible(false), 3500);
       return () => clearTimeout(timer);
     }
     setPrevPath(location.pathname);
@@ -145,15 +145,16 @@ const PageTransitionQuote = () => {
             <div className="mx-auto mt-4 text-5xl font-serif text-primary/30 leading-none rotate-180">"</div>
 
             {/* Author */}
-            <div className="mt-6 flex items-center justify-center gap-3">
-              <div className="h-px w-8 bg-border" />
-              <div>
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-3">
+                <div className="h-px w-8 bg-border" />
                 <p className="text-sm font-semibold text-foreground">{thought.name}</p>
-                <span className="inline-block mt-1 rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
-                  {thought.department}
-                </span>
+                <div className="h-px w-8 bg-border" />
               </div>
-              <div className="h-px w-8 bg-border" />
+              <span className="inline-block rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
+                {thought.department}
+              </span>
+              <p className="text-[11px] text-muted-foreground mt-1">Techno International New Town</p>
             </div>
           </motion.div>
         </motion.div>
