@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, role: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -82,15 +82,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         data: { role },
       },
     });
-    if (!error) {
-      // After signup, update the profile with the role
-      const { data: { user: newUser } } = await supabase.auth.getUser();
-      if (newUser) {
-        await supabase.from('profiles').update({
-          role,
-          is_verified: role === 'student',
-        }).eq('id', newUser.id);
-      }
+    if (!error && data?.user) {
+      // Update profile with role
+      await supabase.from('profiles').update({
+        role,
+        is_verified: role === 'student',
+      }).eq('id', data.user.id);
+
+      // Insert into user_roles for RLS
+      const appRole = role as 'student' | 'alumni' | 'staff' | 'admin';
+      await supabase.from('user_roles').insert({
+        user_id: data.user.id,
+        role: appRole,
+      });
     }
     return { error };
   };
