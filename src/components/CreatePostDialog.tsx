@@ -67,7 +67,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
           <DialogTitle>{canPostOpportunity ? 'Post an Opportunity' : 'Create a Post'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isAlumni && (
+          {canPostOpportunity && (
             <>
               <div className="space-y-2">
                 <Label>Company Name *</Label>
