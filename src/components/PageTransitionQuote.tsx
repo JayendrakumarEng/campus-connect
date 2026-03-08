@@ -70,6 +70,31 @@ const staffThoughts: StaffThought[] = [
     thought: 'Coding is thinking made visible. Master the logic first, then the syntax follows. And never underestimate networking — your next opportunity is one connection away.',
   },
   {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Don\'t just learn to code — learn to solve problems. Every great developer started by asking "why" before "how."',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Your network is your net worth. Attend meetups, contribute to communities, and never eat lunch alone. Opportunities come through people.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'The best time to start building projects was yesterday. The second best time is now. Stop watching tutorials and start shipping code.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'In IT, the only constant is change. The student who adapts fastest wins. Learn one language deeply, then expand horizontally.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Debugging is not just fixing errors — it\'s training your brain to think systematically. Embrace every bug as a lesson.',
+  },
+  {
     name: 'Dr. Meera Joshi',
     department: 'Chemistry',
     thought: 'Your college years are the best time to take risks. Start a project, join a club, enter competitions. Regret nothing.',
@@ -79,21 +104,29 @@ const staffThoughts: StaffThought[] = [
 let lastIndex = -1;
 let transitionCount = 0;
 
-const DR_SBM_INDEX = staffThoughts.findIndex(s => s.name.includes('SatyaBharata'));
+const sbmQuotes = staffThoughts.filter(s => s.name.includes('SatyaBharata'));
+let lastSbmIndex = -1;
 
 const getRandomThought = (): StaffThought => {
   transitionCount++;
 
-  // Show Dr. SBM's quote every 3rd transition (3rd, 6th, 9th...)
-  if (transitionCount % 3 === 0 && DR_SBM_INDEX !== -1) {
-    lastIndex = DR_SBM_INDEX;
-    return staffThoughts[DR_SBM_INDEX];
+  // Show a Dr. SBM quote every 3rd transition, rotating through his quotes
+  if (transitionCount % 3 === 0 && sbmQuotes.length > 0) {
+    let idx: number;
+    do {
+      idx = Math.floor(Math.random() * sbmQuotes.length);
+    } while (idx === lastSbmIndex && sbmQuotes.length > 1);
+    lastSbmIndex = idx;
+    const chosen = sbmQuotes[idx];
+    lastIndex = staffThoughts.indexOf(chosen);
+    return chosen;
   }
 
+  const sbmIndices = new Set(sbmQuotes.map(q => staffThoughts.indexOf(q)));
   let idx: number;
   do {
     idx = Math.floor(Math.random() * staffThoughts.length);
-  } while ((idx === lastIndex || idx === DR_SBM_INDEX) && staffThoughts.length > 2);
+  } while ((idx === lastIndex || sbmIndices.has(idx)) && staffThoughts.length > 2);
   lastIndex = idx;
   return staffThoughts[idx];
 };
