@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Navigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Briefcase, Calendar, BarChart3, Award, FileText } from 'lucide-react';
+import { FileText, Calendar, BarChart3, Award, CheckCircle } from 'lucide-react';
 import StaffPostsTab from '@/components/staff/StaffPostsTab';
 import StaffEventsTab from '@/components/staff/StaffEventsTab';
 import StaffPollsTab from '@/components/staff/StaffPollsTab';
@@ -24,13 +24,13 @@ const StaffDashboard = () => {
       <main className="container max-w-4xl py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">Staff Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage opportunities, events, polls, and student endorsements</p>
+          <p className="text-sm text-muted-foreground">Manage posts, events, polls, and student endorsements</p>
         </div>
 
         <Tabs defaultValue="posts">
           <TabsList className="mb-6 w-full flex-wrap h-auto gap-1">
             <TabsTrigger value="posts" className="flex-1 gap-1">
-              <Briefcase className="h-4 w-4" /> Opportunities
+              <FileText className="h-4 w-4" /> My Posts
             </TabsTrigger>
             <TabsTrigger value="events" className="flex-1 gap-1">
               <Calendar className="h-4 w-4" /> Events
@@ -42,7 +42,7 @@ const StaffDashboard = () => {
               <Award className="h-4 w-4" /> Endorse
             </TabsTrigger>
             <TabsTrigger value="approve" className="flex-1 gap-1">
-              <FileText className="h-4 w-4" /> Approve
+              <CheckCircle className="h-4 w-4" /> Approve
             </TabsTrigger>
           </TabsList>
 

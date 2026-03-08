@@ -3,10 +3,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, ExternalLink, Calendar } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Plus, Trash2, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -15,10 +14,6 @@ const StaffPostsTab = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [roleTitle, setRoleTitle] = useState('');
-  const [applyLink, setApplyLink] = useState('');
-  const [deadline, setDeadline] = useState('');
   const [saving, setSaving] = useState(false);
 
   const fetchMyPosts = async () => {
@@ -35,23 +30,19 @@ const StaffPostsTab = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !content.trim()) return;
     setSaving(true);
     const { error } = await supabase.from('posts').insert({
       author_id: user.id,
       content,
-      type: 'opportunity',
-      company_name: companyName,
-      role_title: roleTitle,
-      apply_link: applyLink || null,
-      deadline: deadline || null,
-      is_approved: true, // Staff posts auto-approved
+      type: 'update',
+      is_approved: true,
     });
     if (error) {
       toast.error('Failed to post');
     } else {
-      toast.success('Opportunity posted!');
-      setContent(''); setCompanyName(''); setRoleTitle(''); setApplyLink(''); setDeadline('');
+      toast.success('Post published!');
+      setContent('');
       setShowForm(false);
       fetchMyPosts();
     }
@@ -67,9 +58,9 @@ const StaffPostsTab = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Your Opportunities</h2>
+        <h2 className="text-lg font-semibold text-foreground">Your Posts</h2>
         <Button onClick={() => setShowForm(!showForm)} size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Post Opportunity
+          <Plus className="h-4 w-4 mr-1" /> New Post
         </Button>
       </div>
 
@@ -77,29 +68,9 @@ const StaffPostsTab = () => {
         <Card>
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Company / Organization *</Label>
-                  <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="e.g. Google, TINT" />
-                </div>
-                <div className="space-y-1">
-                  <Label>Role Title *</Label>
-                  <Input value={roleTitle} onChange={e => setRoleTitle(e.target.value)} required placeholder="e.g. SDE Intern" />
-                </div>
-              </div>
               <div className="space-y-1">
-                <Label>Description *</Label>
-                <Textarea value={content} onChange={e => setContent(e.target.value)} required rows={3} placeholder="Describe the role, requirements, eligibility..." />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label>Apply Link</Label>
-                  <Input value={applyLink} onChange={e => setApplyLink(e.target.value)} placeholder="https://..." />
-                </div>
-                <div className="space-y-1">
-                  <Label>Deadline</Label>
-                  <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
-                </div>
+                <Label>What's on your mind? *</Label>
+                <Textarea value={content} onChange={e => setContent(e.target.value)} required rows={3} placeholder="Share an update, announcement, or thought..." />
               </div>
               <div className="flex gap-2">
                 <Button type="submit" disabled={saving}>{saving ? 'Posting...' : 'Publish'}</Button>
@@ -111,22 +82,28 @@ const StaffPostsTab = () => {
       )}
 
       {posts.length === 0 ? (
-        <p className="py-8 text-center text-muted-foreground">No opportunities posted yet.</p>
+        <p className="py-8 text-center text-muted-foreground">No posts yet.</p>
       ) : (
         posts.map(post => (
           <Card key={post.id}>
             <CardContent className="pt-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-primary">{post.company_name}</span>
-                    <span className="text-muted-foreground">—</span>
-                    <span className="font-medium text-foreground">{post.role_title}</span>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{post.content}</p>
+                  {post.type === 'opportunity' && post.company_name && (
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-primary">{post.company_name}</span>
+                      {post.role_title && (
+                        <>
+                          <span className="text-muted-foreground">—</span>
+                          <span className="font-medium text-foreground">{post.role_title}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-sm text-foreground">{post.content}</p>
                   <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                     {post.deadline && (
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(post.deadline).toLocaleDateString()}</span>
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Deadline: {new Date(post.deadline).toLocaleDateString()}</span>
                     )}
                     <span>{post.created_at && formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</span>
                     <span className={post.is_approved ? 'text-green-600' : 'text-yellow-600'}>{post.is_approved ? '✓ Live' : '⏳ Pending'}</span>
