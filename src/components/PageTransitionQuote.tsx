@@ -115,7 +115,7 @@ const PageTransitionQuote = () => {
     if (shouldShowTransition(prevPath, location.pathname)) {
       setThought(getRandomThought());
       setVisible(true);
-      const timer = setTimeout(() => setVisible(false), 3500);
+      const timer = setTimeout(() => setVisible(false), 2200);
       return () => clearTimeout(timer);
     }
     setPrevPath(location.pathname);
