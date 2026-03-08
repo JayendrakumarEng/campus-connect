@@ -15,7 +15,7 @@ const Auth = () => {
   const [mode, setMode] = useState<'login' | 'signup'>(searchParams.get('mode') === 'signup' ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'student' | 'alumni'>('student');
+  const [role, setRole] = useState<'student' | 'alumni' | 'staff'>('student');
   const [submitting, setSubmitting] = useState(false);
   const { signIn, signUp, user, profile } = useAuth();
   const navigate = useNavigate();
