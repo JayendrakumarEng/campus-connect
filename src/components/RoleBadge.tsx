@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 const roleStyles: Record<string, string> = {
   student: 'bg-secondary text-secondary-foreground',
   alumni: 'bg-primary/10 text-primary border border-primary/20',
+  staff: 'bg-accent text-accent-foreground border border-accent',
   admin: 'bg-destructive/10 text-destructive border border-destructive/20',
 };
 

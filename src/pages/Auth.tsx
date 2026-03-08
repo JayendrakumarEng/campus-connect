@@ -15,7 +15,7 @@ const Auth = () => {
   const [mode, setMode] = useState<'login' | 'signup'>(searchParams.get('mode') === 'signup' ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'student' | 'alumni'>('student');
+  const [role, setRole] = useState<'student' | 'alumni' | 'staff'>('student');
   const [submitting, setSubmitting] = useState(false);
   const { signIn, signUp, user, profile } = useAuth();
   const navigate = useNavigate();
@@ -109,8 +109,8 @@ const Auth = () => {
             {mode === 'signup' && (
               <div className="space-y-2">
                 <Label>I am a...</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(['student', 'alumni'] as const).map(r => (
+                <div className="grid grid-cols-3 gap-2">
+                  {(['student', 'alumni', 'staff'] as const).map(r => (
                     <button
                       key={r}
                       type="button"

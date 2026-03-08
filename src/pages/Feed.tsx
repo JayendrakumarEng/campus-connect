@@ -59,6 +59,22 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts();
     fetchBookmarks();
+
+    // Realtime subscription for new/updated/deleted posts
+    const channel = supabase
+      .channel('posts-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'posts' },
+        () => {
+          fetchPosts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const toggleBookmark = async (postId: string) => {
