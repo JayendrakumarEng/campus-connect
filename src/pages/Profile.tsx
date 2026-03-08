@@ -152,7 +152,7 @@ const Profile = () => {
         </Card>
 
         {/* Resume & Portfolio */}
-        {(profile.resume_url || profile.portfolio_url || (profile.projects && JSON.parse(profile.projects || '[]').length > 0)) && (
+        {(profile.resume_url || profile.portfolio_url || (profile.projects && (Array.isArray(profile.projects) ? profile.projects : (() => { try { return JSON.parse(profile.projects); } catch { return []; } })()).length > 0)) && (
           <Card className="mt-6">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
