@@ -15,6 +15,7 @@ import Bookmarks from "./pages/Bookmarks";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
 import College from "./pages/College";
+import StaffDashboard from "./pages/StaffDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
