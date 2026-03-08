@@ -175,7 +175,7 @@ const Profile = () => {
                 )}
                 {(() => {
                   try {
-                    const projs = JSON.parse(profile.projects || '[]');
+                    const projs = Array.isArray(profile.projects) ? profile.projects : JSON.parse(profile.projects || '[]');
                     if (projs.length > 0) {
                       return (
                         <div>
