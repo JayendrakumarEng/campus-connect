@@ -70,6 +70,31 @@ const staffThoughts: StaffThought[] = [
     thought: 'Coding is thinking made visible. Master the logic first, then the syntax follows. And never underestimate networking — your next opportunity is one connection away.',
   },
   {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Don\'t just learn to code — learn to solve problems. Every great developer started by asking "why" before "how."',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Your network is your net worth. Attend meetups, contribute to communities, and never eat lunch alone. Opportunities come through people.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'The best time to start building projects was yesterday. The second best time is now. Stop watching tutorials and start shipping code.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'In IT, the only constant is change. The student who adapts fastest wins. Learn one language deeply, then expand horizontally.',
+  },
+  {
+    name: 'Dr. SatyaBharata Maiti',
+    department: 'Information Technology',
+    thought: 'Debugging is not just fixing errors — it\'s training your brain to think systematically. Embrace every bug as a lesson.',
+  },
+  {
     name: 'Dr. Meera Joshi',
     department: 'Chemistry',
     thought: 'Your college years are the best time to take risks. Start a project, join a club, enter competitions. Regret nothing.',
