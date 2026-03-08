@@ -16,7 +16,7 @@ interface Props {
 
 const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
   const { user, profile } = useAuth();
-  const isAlumni = profile?.role === 'alumni';
+  const canPostOpportunity = profile?.role === 'alumni' || profile?.role === 'staff' || profile?.role === 'admin';
 
   const [content, setContent] = useState('');
   const [companyName, setCompanyName] = useState('');
