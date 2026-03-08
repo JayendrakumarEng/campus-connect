@@ -90,7 +90,7 @@ const CreatePostDialog = ({ open, onOpenChange, onPostCreated }: Props) => {
             />
             <p className="text-xs text-muted-foreground text-right">{content.length}/500</p>
           </div>
-          {isAlumni && (
+          {canPostOpportunity && (
             <>
               <div className="space-y-2">
                 <Label>Apply Link</Label>
