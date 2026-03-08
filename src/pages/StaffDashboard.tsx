@@ -24,7 +24,7 @@ const StaffDashboard = () => {
       <main className="container max-w-4xl py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">Staff Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage opportunities, events, polls, and student endorsements</p>
+          <p className="text-sm text-muted-foreground">Manage posts, events, polls, and student endorsements</p>
         </div>
 
         <Tabs defaultValue="posts">
