@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
+import College from "./pages/College";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
