@@ -98,4 +98,12 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm;
   }
+  
+  .glass-panel {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+  
+  .glass-panel-dark {
+    @apply bg-black/20 backdrop-blur-xl border border-white/10 shadow-lg;
+  }
 }
