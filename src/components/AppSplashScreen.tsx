@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { GraduationCap } from 'lucide-react';
-import collegeBuildingImg from '@/assets/college-building.jpg';
 
 const AppSplashScreen = ({ onFinish }: { onFinish: () => void }) => {
   const [progress, setProgress] = useState(0);
@@ -29,21 +28,8 @@ const AppSplashScreen = ({ onFinish }: { onFinish: () => void }) => {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.05 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[hsl(211,55%,14%)] via-[hsl(211,55%,20%)] to-[hsl(211,55%,10%)]"
     >
-      {/* Background Image with Ken Burns */}
-      <motion.img
-        src={collegeBuildingImg}
-        alt=""
-        initial={{ scale: 1.1 }}
-        animate={{ scale: 1.2 }}
-        transition={{ duration: 3, ease: 'linear' }}
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
-
       {/* Animated floating particles */}
       {[...Array(6)].map((_, i) => (
         <motion.div
@@ -68,12 +54,12 @@ const AppSplashScreen = ({ onFinish }: { onFinish: () => void }) => {
         />
       ))}
 
-      {/* Glassmorphism center card */}
+      {/* Center card - no backdrop-blur for performance */}
       <motion.div
         initial={{ opacity: 0, y: 40, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 mx-4 flex flex-col items-center rounded-3xl border border-white/20 bg-white/10 px-10 py-10 backdrop-blur-xl shadow-2xl"
+        className="relative z-10 mx-4 flex flex-col items-center rounded-3xl border border-white/20 bg-white/10 px-10 py-10 shadow-2xl"
         style={{ maxWidth: 360 }}
       >
         {/* Pulsing icon */}
@@ -81,7 +67,7 @@ const AppSplashScreen = ({ onFinish }: { onFinish: () => void }) => {
           initial={{ scale: 0, rotate: -30 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ duration: 0.6, delay: 0.4, type: 'spring', stiffness: 200 }}
-          className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/30 bg-white/15 backdrop-blur-sm shadow-lg"
+          className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/30 bg-white/15 shadow-lg"
         >
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
@@ -96,6 +82,7 @@ const AppSplashScreen = ({ onFinish }: { onFinish: () => void }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
           className="text-2xl font-bold text-white tracking-tight text-center"
+          style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
         >
           Campus Connect
         </motion.h1>
