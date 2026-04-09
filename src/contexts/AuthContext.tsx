@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { buildAppUrl } from '@/lib/app-url';
 
 interface Profile {
   id: string;
@@ -37,39 +38,64 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const normalizeRole = (role: unknown): 'student' | 'alumni' | 'staff' | 'admin' => {
+  if (role === 'alumni' || role === 'staff' || role === 'admin') {
+    return role;
+  }
+
+  return 'student';
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    setProfile(data);
+  const fetchProfile = async (authUser: User) => {
+    const { data } = await supabase.from('profiles').select('*').eq('id', authUser.id).maybeSingle();
+
+    if (data) {
+      setProfile(data);
+      return;
+    }
+
+    const role = normalizeRole(authUser.user_metadata?.role);
+    const { data: createdProfile } = await supabase
+      .from('profiles')
+      .insert({
+        id: authUser.id,
+        email: authUser.email ?? null,
+        role,
+        is_verified: role === 'student',
+      })
+      .select('*')
+      .single();
+
+    setProfile(createdProfile ?? null);
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) await fetchProfile(user);
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        // Use setTimeout to avoid Supabase deadlock
-        setTimeout(() => fetchProfile(session.user.id), 0);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+      if (nextSession?.user) {
+        setTimeout(() => fetchProfile(nextSession.user), 0);
       } else {
         setProfile(null);
       }
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      if (currentSession?.user) {
+        fetchProfile(currentSession.user);
       }
       setLoading(false);
     });
@@ -78,28 +104,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, role: string) => {
-    const { error, data } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: buildAppUrl('auth'),
         data: { role },
       },
     });
-    if (!error && data?.user) {
-      // Update profile with role
-      await supabase.from('profiles').update({
-        role,
-        is_verified: role === 'student',
-      }).eq('id', data.user.id);
 
-      // Insert into user_roles for RLS
-      const appRole = role as 'student' | 'alumni' | 'staff' | 'admin';
-      await supabase.from('user_roles').insert({
-        user_id: data.user.id,
-        role: appRole,
-      });
-    }
     return { error };
   };
 
