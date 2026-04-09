@@ -38,7 +38,7 @@ const App = () => {
         <AnimatePresence>
           {showSplash && <AppSplashScreen onFinish={handleSplashFinish} />}
         </AnimatePresence>
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <AuthProvider>
             <PageTransitionQuote />
             <Routes>
