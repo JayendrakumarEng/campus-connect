@@ -7,6 +7,7 @@ import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, 
 import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { motion } from 'framer-motion';
+import RoleBadge from '@/components/RoleBadge';
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
@@ -34,11 +35,11 @@ const Navbar = () => {
   ];
 
   const staffLinks = (profile?.role === 'staff' || profile?.role === 'admin')
-    ? [{ to: '/staff', label: 'Dashboard', icon: LayoutDashboard }]
+    ? [{ to: '/staff', label: 'Dashboard', icon: LayoutDashboard, badge: 'staff' as const }]
     : [];
 
   const adminLinks = profile?.role === 'admin'
-    ? [{ to: '/admin', label: 'Admin', icon: Shield }]
+    ? [{ to: '/admin', label: 'Admin', icon: Shield, badge: 'admin' as const }]
     : [];
 
   const allLinks = [...mainLinks, ...staffLinks, ...adminLinks];
@@ -70,6 +71,7 @@ const Navbar = () => {
               >
                 <link.icon className="h-4 w-4" />
                 <span>{link.label}</span>
+                {'badge' in link && <RoleBadge role={(link as any).badge} />}
                 {isActive(link.to) && (
                   <motion.div
                     layoutId="nav-indicator"
@@ -105,7 +107,10 @@ const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52 rounded-xl p-1.5">
                 <div className="px-3 py-2 mb-1">
-                  <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || 'User'}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || 'User'}</p>
+                    <RoleBadge role={profile?.role || null} />
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
@@ -143,7 +148,10 @@ const Navbar = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</p>
+                      <RoleBadge role={profile?.role || null} />
+                    </div>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
@@ -162,6 +170,7 @@ const Navbar = () => {
                     >
                       <link.icon className="h-5 w-5" />
                       <span>{link.label}</span>
+                      {'badge' in link && <RoleBadge role={(link as any).badge} />}
                     </Link>
                   ))}
                   <div className="my-2 border-t border-border/50" />
