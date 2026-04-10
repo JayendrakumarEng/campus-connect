@@ -107,7 +107,10 @@ const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52 rounded-xl p-1.5">
                 <div className="px-3 py-2 mb-1">
-                  <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || 'User'}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || 'User'}</p>
+                    <RoleBadge role={profile?.role || null} />
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
