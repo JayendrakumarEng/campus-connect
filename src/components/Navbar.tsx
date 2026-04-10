@@ -170,6 +170,7 @@ const Navbar = () => {
                     >
                       <link.icon className="h-5 w-5" />
                       <span>{link.label}</span>
+                      {'badge' in link && <RoleBadge role={(link as any).badge} />}
                     </Link>
                   ))}
                   <div className="my-2 border-t border-border/50" />
