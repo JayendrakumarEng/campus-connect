@@ -71,6 +71,7 @@ const Navbar = () => {
               >
                 <link.icon className="h-4 w-4" />
                 <span>{link.label}</span>
+                {'badge' in link && <RoleBadge role={(link as any).badge} />}
                 {isActive(link.to) && (
                   <motion.div
                     layoutId="nav-indicator"
