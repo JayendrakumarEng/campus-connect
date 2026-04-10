@@ -148,7 +148,10 @@ const Navbar = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</p>
+                      <RoleBadge role={profile?.role || null} />
+                    </div>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
