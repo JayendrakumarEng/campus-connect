@@ -7,6 +7,7 @@ import { Home, Compass, Bookmark, Settings, LogOut, Shield, GraduationCap, Sun, 
 import { useEffect, useState } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { motion } from 'framer-motion';
+import RoleBadge from '@/components/RoleBadge';
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
