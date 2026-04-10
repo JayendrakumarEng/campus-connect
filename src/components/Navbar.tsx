@@ -35,11 +35,11 @@ const Navbar = () => {
   ];
 
   const staffLinks = (profile?.role === 'staff' || profile?.role === 'admin')
-    ? [{ to: '/staff', label: 'Dashboard', icon: LayoutDashboard }]
+    ? [{ to: '/staff', label: 'Dashboard', icon: LayoutDashboard, badge: 'staff' as const }]
     : [];
 
   const adminLinks = profile?.role === 'admin'
-    ? [{ to: '/admin', label: 'Admin', icon: Shield }]
+    ? [{ to: '/admin', label: 'Admin', icon: Shield, badge: 'admin' as const }]
     : [];
 
   const allLinks = [...mainLinks, ...staffLinks, ...adminLinks];
