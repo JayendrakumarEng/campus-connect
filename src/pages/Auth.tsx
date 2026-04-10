@@ -56,14 +56,17 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: buildAppUrl('auth'),
-      },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) {
+
+    if (result.error) {
       toast.error('Google sign-in failed. Please try again.');
+      return;
+    }
+
+    if (result.redirected) {
+      return;
     }
   };
 
