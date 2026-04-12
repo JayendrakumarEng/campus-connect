@@ -13,6 +13,7 @@ import SkillTag from '@/components/SkillTag';
 import Navbar from '@/components/Navbar';
 import { UserPlus, UserCheck, Search } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface Profile {
   id: string;
@@ -81,32 +82,43 @@ const Explore = () => {
   const branches = [...new Set(profiles.map(p => p.branch).filter(Boolean))];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-16 md:pb-0">
       <Navbar />
       <main className="container max-w-4xl py-6">
-        <h1 className="mb-6 text-2xl font-bold">Explore Students</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 text-2xl font-bold"
+        >
+          Explore Students
+        </motion.h1>
 
-        <div className="mb-6 flex flex-wrap gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 flex flex-wrap gap-3"
+        >
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or skill..." className="pl-9" />
+            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or skill..." className="pl-9 glass-input rounded-xl" />
           </div>
           <Select value={branchFilter} onValueChange={setBranchFilter}>
-            <SelectTrigger className="w-[130px]"><SelectValue placeholder="Branch" /></SelectTrigger>
+            <SelectTrigger className="w-[130px] glass-input rounded-xl"><SelectValue placeholder="Branch" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Branches</SelectItem>
               {branches.map(b => <SelectItem key={b} value={b!}>{b}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={yearFilter} onValueChange={setYearFilter}>
-            <SelectTrigger className="w-[120px]"><SelectValue placeholder="Year" /></SelectTrigger>
+            <SelectTrigger className="w-[120px] glass-input rounded-xl"><SelectValue placeholder="Year" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Years</SelectItem>
               {['1st', '2nd', '3rd', '4th'].map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="w-[160px] glass-input rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               {['Open to Internship', 'Placed', 'Freelancing', 'Not Looking'].map(s => (
@@ -114,7 +126,7 @@ const Explore = () => {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="flex justify-center py-12">
@@ -123,13 +135,13 @@ const Explore = () => {
         ) : filtered.length === 0 ? (
           <p className="py-12 text-center text-muted-foreground">No students found.</p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 stagger-fade-in">
             {filtered.map(p => (
-              <Card key={p.id} className="animate-fade-in hover:shadow-md transition-shadow">
+              <Card key={p.id} className="glass-card-hover rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
                     <Link to={`/profile/${p.id}`}>
-                      <Avatar className="h-12 w-12">
+                      <Avatar className="h-12 w-12 ring-2 ring-border/30">
                         <AvatarImage src={p.avatar_url || ''} />
                         <AvatarFallback className="bg-primary/10 text-primary">{p.full_name?.charAt(0) || '?'}</AvatarFallback>
                       </Avatar>
@@ -157,6 +169,7 @@ const Explore = () => {
                         size="sm"
                         variant={following.has(p.id) ? 'secondary' : 'default'}
                         onClick={() => toggleFollow(p.id)}
+                        className="rounded-xl"
                       >
                         {following.has(p.id) ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
                       </Button>

@@ -10,6 +10,7 @@ import { Send, Search, MessageSquare, ArrowLeft, Plus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface Conversation {
   id: string;
@@ -103,7 +104,6 @@ const Messages = () => {
       .order('created_at', { ascending: true });
     setMessages(data || []);
 
-    // Mark as read
     if (user) {
       await supabase
         .from('messages')
@@ -114,9 +114,7 @@ const Messages = () => {
     }
   };
 
-  useEffect(() => {
-    fetchConversations();
-  }, [user]);
+  useEffect(() => { fetchConversations(); }, [user]);
 
   useEffect(() => {
     if (!activeConvo) return;
@@ -131,7 +129,6 @@ const Messages = () => {
         filter: `conversation_id=eq.${activeConvo.id}`,
       }, (payload) => {
         setMessages(prev => [...prev, payload.new as Message]);
-        // Mark as read if we're viewing
         if (user && (payload.new as Message).sender_id !== user.id) {
           supabase.from('messages').update({ is_read: true }).eq('id', (payload.new as Message).id);
         }
@@ -174,7 +171,6 @@ const Messages = () => {
   const startConversation = async (otherUserId: string) => {
     if (!user) return;
 
-    // Check if conversation exists
     const { data: existing } = await supabase
       .from('conversations')
       .select('*')
@@ -226,22 +222,27 @@ const Messages = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-16 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-16 md:pb-0">
       <Navbar />
       <div className="container max-w-5xl py-4">
-        <div className="flex h-[calc(100vh-8rem)] md:h-[calc(100vh-5rem)] rounded-xl border bg-card overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex h-[calc(100vh-8rem)] md:h-[calc(100vh-5rem)] rounded-2xl glass-card overflow-hidden"
+        >
           {/* Sidebar */}
-          <div className={`w-full md:w-80 lg:w-96 border-r flex flex-col ${mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
-            <div className="p-4 border-b space-y-3">
+          <div className={`w-full md:w-80 lg:w-96 border-r border-border/30 flex flex-col ${mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
+            <div className="p-4 border-b border-border/30 space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold">Messages</h2>
                 <Dialog open={newChatOpen} onOpenChange={setNewChatOpen}>
                   <DialogTrigger asChild>
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-xl">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="rounded-2xl">
                     <DialogHeader>
                       <DialogTitle>New Conversation</DialogTitle>
                     </DialogHeader>
@@ -249,13 +250,14 @@ const Messages = () => {
                       placeholder="Search by name..."
                       value={newChatSearch}
                       onChange={e => searchUsers(e.target.value)}
+                      className="rounded-xl"
                     />
                     <div className="max-h-64 overflow-y-auto space-y-1 mt-2">
                       {searchResults.map(u => (
                         <button
                           key={u.id}
                           onClick={() => startConversation(u.id)}
-                          className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-accent transition-colors text-left"
+                          className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-accent/50 transition-all text-left"
                         >
                           <Avatar className="h-9 w-9">
                             <AvatarImage src={u.avatar_url || ''} />
@@ -280,7 +282,7 @@ const Messages = () => {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search conversations..."
-                  className="pl-9 h-9"
+                  className="pl-9 h-9 rounded-xl glass-input"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -303,12 +305,12 @@ const Messages = () => {
                   <button
                     key={convo.id}
                     onClick={() => selectConvo(convo)}
-                    className={`flex items-center gap-3 w-full p-4 hover:bg-accent/50 transition-colors text-left border-b ${
-                      activeConvo?.id === convo.id ? 'bg-accent' : ''
+                    className={`flex items-center gap-3 w-full p-4 hover:bg-accent/30 transition-all text-left border-b border-border/20 ${
+                      activeConvo?.id === convo.id ? 'bg-primary/5' : ''
                     }`}
                   >
                     <div className="relative">
-                      <Avatar className="h-11 w-11">
+                      <Avatar className="h-11 w-11 ring-2 ring-border/30">
                         <AvatarImage src={convo.other_user?.avatar_url || ''} />
                         <AvatarFallback className="bg-primary/10 text-primary text-sm">
                           {convo.other_user?.full_name?.charAt(0) || '?'}
@@ -339,17 +341,16 @@ const Messages = () => {
           <div className={`flex-1 flex flex-col ${!mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
             {activeConvo ? (
               <>
-                {/* Chat header */}
-                <div className="flex items-center gap-3 p-4 border-b">
+                <div className="flex items-center gap-3 p-4 border-b border-border/30 glass-card">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 md:hidden"
+                    className="h-8 w-8 md:hidden rounded-xl"
                     onClick={() => { setMobileShowChat(false); fetchConversations(); }}
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
-                  <Avatar className="h-9 w-9">
+                  <Avatar className="h-9 w-9 ring-2 ring-border/30">
                     <AvatarImage src={activeConvo.other_user?.avatar_url || ''} />
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">
                       {activeConvo.other_user?.full_name?.charAt(0) || '?'}
@@ -361,7 +362,6 @@ const Messages = () => {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-3">
                     {messages.length === 0 && (
@@ -372,26 +372,31 @@ const Messages = () => {
                     {messages.map(msg => {
                       const isMe = msg.sender_id === user?.id;
                       return (
-                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ duration: 0.2 }}
+                          className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                        >
                           <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
                             isMe
-                              ? 'bg-primary text-primary-foreground rounded-br-md'
-                              : 'bg-accent text-accent-foreground rounded-bl-md'
+                              ? 'bg-primary text-primary-foreground rounded-br-md shadow-md shadow-primary/20'
+                              : 'glass-card rounded-bl-md'
                           }`}>
                             <p>{msg.content}</p>
                             <p className={`text-[10px] mt-1 ${isMe ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>
                               {msg.created_at && formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
                             </p>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 
-                {/* Input */}
-                <div className="p-4 border-t">
+                <div className="p-4 border-t border-border/30">
                   <form
                     onSubmit={e => { e.preventDefault(); sendMessage(); }}
                     className="flex gap-2"
@@ -400,9 +405,9 @@ const Messages = () => {
                       value={newMessage}
                       onChange={e => setNewMessage(e.target.value)}
                       placeholder="Type a message..."
-                      className="flex-1"
+                      className="flex-1 rounded-xl glass-input"
                     />
-                    <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+                    <Button type="submit" size="icon" disabled={!newMessage.trim()} className="rounded-xl">
                       <Send className="h-4 w-4" />
                     </Button>
                   </form>
@@ -410,9 +415,14 @@ const Messages = () => {
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"
+                >
                   <MessageSquare className="h-8 w-8 text-primary" />
-                </div>
+                </motion.div>
                 <h3 className="text-lg font-semibold">Your Messages</h3>
                 <p className="text-sm text-muted-foreground mt-1 max-w-xs">
                   Select a conversation or start a new one to connect with students, alumni, and staff.
@@ -420,7 +430,7 @@ const Messages = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

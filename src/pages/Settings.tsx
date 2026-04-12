@@ -13,6 +13,7 @@ import ResumePortfolioSection from '@/components/ResumePortfolioSection';
 import Navbar from '@/components/Navbar';
 import { Camera } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const Settings = () => {
   const { user, profile, refreshProfile } = useAuth();
@@ -80,104 +81,114 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-16 md:pb-0">
       <Navbar />
       <main className="container max-w-lg py-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Profile</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6 flex justify-center">
-              <div className="relative">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={avatarUrl} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-2xl">
-                    {fullName?.charAt(0) || '?'}
-                  </AvatarFallback>
-                </Avatar>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 rounded-full bg-primary p-1.5 text-primary-foreground shadow-md hover:bg-primary/90"
-                  disabled={uploading}
-                >
-                  <Camera className="h-4 w-4" />
-                </button>
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="glass-card rounded-2xl">
+            <CardHeader>
+              <CardTitle>Edit Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6 flex justify-center">
+                <div className="relative group">
+                  <Avatar className="h-24 w-24 ring-4 ring-border/30">
+                    <AvatarImage src={avatarUrl} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-2xl">
+                      {fullName?.charAt(0) || '?'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 rounded-full bg-primary p-1.5 text-primary-foreground shadow-md hover:bg-primary/90 transition-transform hover:scale-110"
+                    disabled={uploading}
+                  >
+                    <Camera className="h-4 w-4" />
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                </div>
               </div>
-            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Full Name</Label>
-                <Input value={fullName} onChange={e => setFullName(e.target.value)} />
-              </div>
-              {profile?.role === 'student' && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Branch</Label>
-                      <Input value={branch} onChange={e => setBranch(e.target.value)} />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Full Name</Label>
+                  <Input value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl" />
+                </div>
+                {profile?.role === 'student' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Branch</Label>
+                        <Input value={branch} onChange={e => setBranch(e.target.value)} className="rounded-xl" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Year</Label>
+                        <Select value={year} onValueChange={setYear}>
+                          <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {['1st', '2nd', '3rd', '4th'].map(y => (
+                              <SelectItem key={y} value={y}>{y} Year</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Year</Label>
-                      <Select value={year} onValueChange={setYear}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                      <Label>Status</Label>
+                      <Select value={status} onValueChange={setStatus}>
+                        <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {['1st', '2nd', '3rd', '4th'].map(y => (
-                            <SelectItem key={y} value={y}>{y} Year</SelectItem>
+                          {['Open to Internship', 'Placed', 'Freelancing', 'Not Looking'].map(s => (
+                            <SelectItem key={s} value={s}>{s}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                    <div className="space-y-2">
+                      <Label>GitHub URL</Label>
+                      <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} className="rounded-xl" />
+                    </div>
+                  </>
+                )}
+                {profile?.role === 'alumni' && (
                   <div className="space-y-2">
-                    <Label>Status</Label>
-                    <Select value={status} onValueChange={setStatus}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {['Open to Internship', 'Placed', 'Freelancing', 'Not Looking'].map(s => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Company</Label>
+                    <Input value={company} onChange={e => setCompany(e.target.value)} className="rounded-xl" />
                   </div>
-                  <div className="space-y-2">
-                    <Label>GitHub URL</Label>
-                    <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} />
-                  </div>
-                </>
-              )}
-              {profile?.role === 'alumni' && (
+                )}
                 <div className="space-y-2">
-                  <Label>Company</Label>
-                  <Input value={company} onChange={e => setCompany(e.target.value)} />
+                  <Label>Bio</Label>
+                  <Textarea value={bio} onChange={e => setBio(e.target.value)} rows={3} className="rounded-xl" />
                 </div>
-              )}
-              <div className="space-y-2">
-                <Label>Bio</Label>
-                <Textarea value={bio} onChange={e => setBio(e.target.value)} rows={3} />
-              </div>
-              <div className="space-y-2">
-                <Label>Skills</Label>
-                <SkillsInput skills={skills} onChange={setSkills} />
-              </div>
-              <div className="space-y-2">
-                <Label>LinkedIn URL</Label>
-                <Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} />
-              </div>
-              <Button type="submit" className="w-full" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label>Skills</Label>
+                  <SkillsInput skills={skills} onChange={setSkills} />
+                </div>
+                <div className="space-y-2">
+                  <Label>LinkedIn URL</Label>
+                  <Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} className="rounded-xl" />
+                </div>
+                <Button type="submit" className="w-full rounded-xl" disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* Resume & Portfolio Section */}
-        <div className="mt-6">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="mt-6"
+        >
           <ResumePortfolioSection />
-        </div>
+        </motion.div>
       </main>
     </div>
   );
