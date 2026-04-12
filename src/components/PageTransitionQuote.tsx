@@ -68,7 +68,7 @@ const PageTransitionQuote = () => {
     if (shouldShowTransition(prevPath, location.pathname)) {
       setThought(getRandomThought());
       setVisible(true);
-      const timer = setTimeout(() => setVisible(false), 1800);
+      const timer = setTimeout(() => setVisible(false), 3500);
       return () => clearTimeout(timer);
     }
     setPrevPath(location.pathname);
@@ -133,7 +133,7 @@ const PageTransitionQuote = () => {
               <motion.div
                 initial={{ width: '0%' }}
                 animate={{ width: '100%' }}
-                transition={{ duration: 1.6, ease: 'linear' }}
+                transition={{ duration: 3.2, ease: 'linear' }}
                 className="h-full bg-primary/40 rounded-full"
               />
             </motion.div>
