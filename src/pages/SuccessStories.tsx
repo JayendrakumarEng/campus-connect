@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Trophy, Plus, Building, Briefcase, Lightbulb, Quote, Star, Heart, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { motion } from 'framer-motion';
 
 interface Story {
   id: string;
@@ -64,8 +65,6 @@ const SuccessStories = () => {
 
   const fetchLikes = async (storyIds: string[]) => {
     if (storyIds.length === 0) return;
-
-    // Fetch all likes counts
     const { data: allLikes } = await supabase
       .from('story_likes')
       .select('story_id')
@@ -77,7 +76,6 @@ const SuccessStories = () => {
     });
     setLikes(countsMap);
 
-    // Fetch user's own likes
     if (user) {
       const { data: myLikes } = await supabase
         .from('story_likes')
@@ -102,7 +100,6 @@ const SuccessStories = () => {
       return;
     }
     setLikingStory(storyId);
-
     if (userLikes.has(storyId)) {
       await supabase.from('story_likes').delete().eq('user_id', user.id).eq('story_id', storyId);
       setUserLikes(prev => { const s = new Set(prev); s.delete(storyId); return s; });
@@ -125,7 +122,6 @@ const SuccessStories = () => {
       return;
     }
 
-    // Check if conversation already exists
     const { data: existing } = await supabase
       .from('conversations')
       .select('id')
@@ -137,7 +133,6 @@ const SuccessStories = () => {
       return;
     }
 
-    // Create new conversation
     const { error } = await supabase
       .from('conversations')
       .insert({ participant_1: user.id, participant_2: authorId });
@@ -177,20 +172,25 @@ const SuccessStories = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-16 md:pb-0">
       <Navbar />
       <main className="container max-w-3xl py-6">
         {/* Hero */}
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 text-center"
+        >
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass-card">
             <Trophy className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-3xl font-extrabold text-foreground">Success Stories</h1>
           <p className="mt-2 text-muted-foreground">Real journeys from TINT students who made it big. Get inspired!</p>
-          <Button onClick={() => setShowForm(true)} className="mt-4">
+          <Button onClick={() => setShowForm(true)} className="mt-4 rounded-xl">
             <Plus className="h-4 w-4 mr-1" /> Share Your Story
           </Button>
-        </div>
+        </motion.div>
 
         {/* Stories List */}
         {loading ? (
@@ -198,19 +198,17 @@ const SuccessStories = () => {
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         ) : stories.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Trophy className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground">No success stories yet. Be the first to share yours!</p>
-            </CardContent>
-          </Card>
+          <div className="glass-card rounded-2xl py-12 text-center">
+            <Trophy className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
+            <p className="text-muted-foreground">No success stories yet. Be the first to share yours!</p>
+          </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 stagger-fade-in">
             {stories.map(s => (
-              <Card key={s.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={s.id} className="glass-card-hover rounded-2xl overflow-hidden">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12 shrink-0">
+                    <Avatar className="h-12 w-12 shrink-0 ring-2 ring-border/30">
                       <AvatarImage src={s.profiles?.avatar_url || ''} />
                       <AvatarFallback className="bg-primary/10 text-primary">{s.profiles?.full_name?.charAt(0) || '?'}</AvatarFallback>
                     </Avatar>
@@ -218,7 +216,7 @@ const SuccessStories = () => {
                       <h3 className="text-lg font-bold text-foreground">{s.title}</h3>
                       <div className="flex flex-wrap items-center gap-2 mt-1">
                         <span className="text-sm font-medium text-foreground">{s.profiles?.full_name}</span>
-                        {s.profiles?.branch && <Badge variant="secondary" className="text-xs">{s.profiles.branch}</Badge>}
+                        {s.profiles?.branch && <Badge variant="secondary" className="text-xs rounded-lg">{s.profiles.branch}</Badge>}
                       </div>
                       <div className="flex flex-wrap items-center gap-3 mt-2 text-sm">
                         <span className="flex items-center gap-1 text-primary font-semibold">
@@ -228,7 +226,7 @@ const SuccessStories = () => {
                           <Briefcase className="h-4 w-4" /> {s.role_title}
                         </span>
                         {s.package && (
-                          <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-0">
+                          <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-0 rounded-lg">
                             <Star className="h-3 w-3 mr-1" /> {s.package}
                           </Badge>
                         )}
@@ -237,13 +235,13 @@ const SuccessStories = () => {
                         )}
                       </div>
 
-                      <div className="mt-4 rounded-lg bg-muted/50 p-4">
+                      <div className="mt-4 rounded-xl glass-card p-4">
                         <Quote className="h-5 w-5 text-primary/40 mb-2" />
                         <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">{s.story}</p>
                       </div>
 
                       {s.tips && (
-                        <div className="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                        <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
                           <div className="flex items-center gap-2 text-sm font-semibold text-primary mb-1">
                             <Lightbulb className="h-4 w-4" /> Tips for Juniors
                           </div>
@@ -251,12 +249,11 @@ const SuccessStories = () => {
                         </div>
                       )}
 
-                      {/* Like & Query Actions */}
-                      <div className="mt-4 flex items-center gap-4 border-t pt-3">
+                      <div className="mt-4 flex items-center gap-4 border-t border-border/30 pt-3">
                         <button
                           onClick={() => toggleLike(s.id)}
                           disabled={likingStory === s.id}
-                          className="flex items-center gap-1.5 text-sm transition-colors hover:text-red-500 group"
+                          className="flex items-center gap-1.5 text-sm transition-all hover:text-red-500 hover:scale-110 group"
                         >
                           <Heart
                             className={`h-5 w-5 transition-all ${
@@ -273,7 +270,7 @@ const SuccessStories = () => {
                         {user && s.user_id !== user.id && (
                           <button
                             onClick={() => askQuery(s.user_id, s.profiles?.full_name || 'Author')}
-                            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-all hover:scale-105 group"
                           >
                             <MessageCircle className="h-5 w-5 group-hover:text-primary transition-colors" />
                             <span>Ask a Query</span>
@@ -294,44 +291,44 @@ const SuccessStories = () => {
 
         {/* Submit Form Dialog */}
         <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl">
             <DialogHeader>
               <DialogTitle>Share Your Placement Story</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="space-y-1">
                 <Label>Story Title *</Label>
-                <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. My Journey to Google — From TINT to Mountain View" />
+                <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. My Journey to Google — From TINT to Mountain View" className="rounded-xl" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Company *</Label>
-                  <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="e.g. Amazon" />
+                  <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="e.g. Amazon" className="rounded-xl" />
                 </div>
                 <div className="space-y-1">
                   <Label>Role *</Label>
-                  <Input value={roleTitle} onChange={e => setRoleTitle(e.target.value)} required placeholder="e.g. SDE-1" />
+                  <Input value={roleTitle} onChange={e => setRoleTitle(e.target.value)} required placeholder="e.g. SDE-1" className="rounded-xl" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Package (optional)</Label>
-                  <Input value={pkg} onChange={e => setPkg(e.target.value)} placeholder="e.g. ₹12 LPA" />
+                  <Input value={pkg} onChange={e => setPkg(e.target.value)} placeholder="e.g. ₹12 LPA" className="rounded-xl" />
                 </div>
                 <div className="space-y-1">
                   <Label>Year of Placement</Label>
-                  <Input value={yearOfPlacement} onChange={e => setYearOfPlacement(e.target.value)} placeholder="e.g. 2025" />
+                  <Input value={yearOfPlacement} onChange={e => setYearOfPlacement(e.target.value)} placeholder="e.g. 2025" className="rounded-xl" />
                 </div>
               </div>
               <div className="space-y-1">
                 <Label>Your Journey *</Label>
-                <Textarea value={story} onChange={e => setStory(e.target.value)} required rows={5} placeholder="Share your preparation strategy, interview experience, how TINT helped..." />
+                <Textarea value={story} onChange={e => setStory(e.target.value)} required rows={5} placeholder="Share your preparation strategy, interview experience, how TINT helped..." className="rounded-xl" />
               </div>
               <div className="space-y-1">
                 <Label>Tips for Juniors (optional)</Label>
-                <Textarea value={tips} onChange={e => setTips(e.target.value)} rows={3} placeholder="What advice would you give students preparing now?" />
+                <Textarea value={tips} onChange={e => setTips(e.target.value)} rows={3} placeholder="What advice would you give students preparing now?" className="rounded-xl" />
               </div>
-              <Button type="submit" className="w-full" disabled={saving}>
+              <Button type="submit" className="w-full rounded-xl" disabled={saving}>
                 {saving ? 'Submitting...' : 'Submit Story for Review'}
               </Button>
             </form>
