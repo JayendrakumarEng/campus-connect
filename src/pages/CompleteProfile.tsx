@@ -11,11 +11,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import SkillsInput from '@/components/SkillsInput';
 import { toast } from 'sonner';
 import { GraduationCap, Briefcase, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const CompleteProfile = () => {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const role = profile?.role || 'student';
+
+  // If the profile has no role (e.g. Google OAuth signup), let the user pick one
+  const [selectedRole, setSelectedRole] = useState<'student' | 'alumni' | 'staff'>(
+    (profile?.role as 'student' | 'alumni' | 'staff') || 'student'
+  );
+  const hasRoleFromSignup = !!profile?.role;
+  const role = hasRoleFromSignup ? (profile.role as string) : selectedRole;
 
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [branch, setBranch] = useState(profile?.branch || '');
@@ -39,6 +46,7 @@ const CompleteProfile = () => {
       bio,
       skills,
       linkedin_url: linkedinUrl,
+      role, // Always save the role
     };
 
     if (role === 'student') {
@@ -71,7 +79,7 @@ const CompleteProfile = () => {
     student: {
       icon: GraduationCap,
       title: 'Student Profile',
-      description: 'Tell us about your academic journey and what you\'re looking for.',
+      description: "Tell us about your academic journey and what you're looking for.",
       color: 'text-primary',
     },
     alumni: {
@@ -88,175 +96,215 @@ const CompleteProfile = () => {
     },
   };
 
+  const roleOptions = [
+    { value: 'student' as const, label: 'Student', emoji: '🎓', desc: 'Currently enrolled' },
+    { value: 'alumni' as const, label: 'Alumni', emoji: '🏆', desc: 'Graduated' },
+    { value: 'staff' as const, label: 'Staff', emoji: '👨‍🏫', desc: 'Faculty/Staff' },
+  ];
+
   const config = roleConfig[role as keyof typeof roleConfig] || roleConfig.student;
   const Icon = config.icon;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="text-center">
-          <div className={`mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 ${config.color}`}>
-            <Icon className="h-6 w-6" />
-          </div>
-          <CardTitle>{config.title}</CardTitle>
-          <CardDescription>{config.description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Common: Full Name */}
-            <div className="space-y-2">
-              <Label>Full Name *</Label>
-              <Input value={fullName} onChange={e => setFullName(e.target.value)} required placeholder={role === 'staff' ? 'Prof. John Doe' : 'John Doe'} />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-lg"
+      >
+        <Card className="border-border/50 shadow-xl shadow-primary/5">
+          <CardHeader className="text-center">
+            <div className={`mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 ${config.color}`}>
+              <Icon className="h-6 w-6" />
             </div>
+            <CardTitle>{config.title}</CardTitle>
+            <CardDescription>{config.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Role selector — shown when profile has no role (e.g. Google OAuth) */}
+              {!hasRoleFromSignup && (
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">I am a...</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {roleOptions.map(r => (
+                      <button
+                        key={r.value}
+                        type="button"
+                        onClick={() => setSelectedRole(r.value)}
+                        className={`group relative rounded-xl border-2 p-3 text-center transition-all duration-200 ${
+                          selectedRole === r.value
+                            ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                            : 'border-border/70 hover:border-primary/40 hover:bg-accent/30'
+                        }`}
+                      >
+                        <span className="text-xl block mb-1">{r.emoji}</span>
+                        <span className={`text-sm font-semibold block ${selectedRole === r.value ? 'text-primary' : 'text-foreground'}`}>
+                          {r.label}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">{r.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* Student-specific fields */}
-            {role === 'student' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
+              {/* Common: Full Name */}
+              <div className="space-y-2">
+                <Label>Full Name *</Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} required placeholder={role === 'staff' ? 'Prof. John Doe' : 'John Doe'} />
+              </div>
+
+              {/* Student-specific fields */}
+              {role === 'student' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Branch</Label>
+                      <Select value={branch} onValueChange={setBranch}>
+                        <SelectTrigger><SelectValue placeholder="Select branch" /></SelectTrigger>
+                        <SelectContent>
+                          {['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT', 'BBA', 'BCA'].map(b => (
+                            <SelectItem key={b} value={b}>{b}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Year</Label>
+                      <Select value={year} onValueChange={setYear}>
+                        <SelectTrigger><SelectValue placeholder="Select year" /></SelectTrigger>
+                        <SelectContent>
+                          {['1st Year', '2nd Year', '3rd Year', '4th Year'].map(y => (
+                            <SelectItem key={y} value={y}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <div className="space-y-2">
-                    <Label>Branch</Label>
-                    <Select value={branch} onValueChange={setBranch}>
-                      <SelectTrigger><SelectValue placeholder="Select branch" /></SelectTrigger>
+                    <Label>Current Status</Label>
+                    <Select value={status} onValueChange={setStatus}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT', 'BBA', 'BCA'].map(b => (
-                          <SelectItem key={b} value={b}>{b}</SelectItem>
+                        {['Open to Internship', 'Placed', 'Freelancing', 'Not Looking'].map(s => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Year</Label>
-                    <Select value={year} onValueChange={setYear}>
-                      <SelectTrigger><SelectValue placeholder="Select year" /></SelectTrigger>
-                      <SelectContent>
-                        {['1st Year', '2nd Year', '3rd Year', '4th Year'].map(y => (
-                          <SelectItem key={y} value={y}>{y}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>GitHub URL</Label>
+                    <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} placeholder="https://github.com/username" />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Current Status</Label>
-                  <Select value={status} onValueChange={setStatus}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {['Open to Internship', 'Placed', 'Freelancing', 'Not Looking'].map(s => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>GitHub URL</Label>
-                  <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} placeholder="https://github.com/username" />
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            {/* Alumni-specific fields */}
-            {role === 'alumni' && (
-              <>
-                <div className="space-y-2">
-                  <Label>Current Company *</Label>
-                  <Input value={company} onChange={e => setCompany(e.target.value)} required placeholder="e.g. Google, TCS, Infosys" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+              {/* Alumni-specific fields */}
+              {role === 'alumni' && (
+                <>
                   <div className="space-y-2">
-                    <Label>Branch</Label>
-                    <Select value={branch} onValueChange={setBranch}>
-                      <SelectTrigger><SelectValue placeholder="Select branch" /></SelectTrigger>
-                      <SelectContent>
-                        {['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT', 'BBA', 'BCA'].map(b => (
-                          <SelectItem key={b} value={b}>{b}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Current Company *</Label>
+                    <Input value={company} onChange={e => setCompany(e.target.value)} required placeholder="e.g. Google, TCS, Infosys" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Branch</Label>
+                      <Select value={branch} onValueChange={setBranch}>
+                        <SelectTrigger><SelectValue placeholder="Select branch" /></SelectTrigger>
+                        <SelectContent>
+                          {['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT', 'BBA', 'BCA'].map(b => (
+                            <SelectItem key={b} value={b}>{b}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Graduation Year</Label>
+                      <Select value={year} onValueChange={setYear}>
+                        <SelectTrigger><SelectValue placeholder="Select year" /></SelectTrigger>
+                        <SelectContent>
+                          {['2020', '2021', '2022', '2023', '2024', '2025', '2026'].map(y => (
+                            <SelectItem key={y} value={`Alumni ${y}`}>Batch {y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Graduation Year</Label>
-                    <Select value={year} onValueChange={setYear}>
-                      <SelectTrigger><SelectValue placeholder="Select year" /></SelectTrigger>
+                    <Label>GitHub URL</Label>
+                    <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} placeholder="https://github.com/username" />
+                  </div>
+                </>
+              )}
+
+              {/* Staff-specific fields */}
+              {role === 'staff' && (
+                <>
+                  <div className="space-y-2">
+                    <Label>Department *</Label>
+                    <Select value={department} onValueChange={setDepartment}>
+                      <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
                       <SelectContent>
-                        {['2020', '2021', '2022', '2023', '2024', '2025', '2026'].map(y => (
-                          <SelectItem key={y} value={`Alumni ${y}`}>Batch {y}</SelectItem>
+                        {[
+                          'Computer Science',
+                          'Electronics & Communication',
+                          'Electrical Engineering',
+                          'Mechanical Engineering',
+                          'Civil Engineering',
+                          'Information Technology',
+                          'Business Administration',
+                          'Mathematics',
+                          'Physics',
+                          'Chemistry',
+                          'Training & Placement',
+                          'Administration',
+                        ].map(d => (
+                          <SelectItem key={d} value={d}>{d}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>GitHub URL</Label>
-                  <Input value={githubUrl} onChange={e => setGithubUrl(e.target.value)} placeholder="https://github.com/username" />
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            {/* Staff-specific fields */}
-            {role === 'staff' && (
-              <>
-                <div className="space-y-2">
-                  <Label>Department *</Label>
-                  <Select value={department} onValueChange={setDepartment}>
-                    <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
-                    <SelectContent>
-                      {[
-                        'Computer Science',
-                        'Electronics & Communication',
-                        'Electrical Engineering',
-                        'Mechanical Engineering',
-                        'Civil Engineering',
-                        'Information Technology',
-                        'Business Administration',
-                        'Mathematics',
-                        'Physics',
-                        'Chemistry',
-                        'Training & Placement',
-                        'Administration',
-                      ].map(d => (
-                        <SelectItem key={d} value={d}>{d}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
-            )}
+              {/* Common: Bio */}
+              <div className="space-y-2">
+                <Label>Bio</Label>
+                <Textarea
+                  value={bio}
+                  onChange={e => setBio(e.target.value)}
+                  placeholder={
+                    role === 'student'
+                      ? "Tell us about your interests, projects, and what you're looking for..."
+                      : role === 'alumni'
+                      ? 'Share your professional journey, expertise, and how you can help current students...'
+                      : 'Share your teaching experience, research areas, and how you guide students...'
+                  }
+                  rows={3}
+                />
+              </div>
 
-            {/* Common: Bio */}
-            <div className="space-y-2">
-              <Label>Bio</Label>
-              <Textarea
-                value={bio}
-                onChange={e => setBio(e.target.value)}
-                placeholder={
-                  role === 'student'
-                    ? 'Tell us about your interests, projects, and what you\'re looking for...'
-                    : role === 'alumni'
-                    ? 'Share your professional journey, expertise, and how you can help current students...'
-                    : 'Share your teaching experience, research areas, and how you guide students...'
-                }
-                rows={3}
-              />
-            </div>
+              {/* Common: Skills / Expertise */}
+              <div className="space-y-2">
+                <Label>{role === 'staff' ? 'Areas of Expertise' : 'Skills'}</Label>
+                <SkillsInput skills={skills} onChange={setSkills} />
+              </div>
 
-            {/* Common: Skills / Expertise */}
-            <div className="space-y-2">
-              <Label>{role === 'staff' ? 'Areas of Expertise' : 'Skills'}</Label>
-              <SkillsInput skills={skills} onChange={setSkills} />
-            </div>
+              {/* Common: LinkedIn */}
+              <div className="space-y-2">
+                <Label>LinkedIn URL</Label>
+                <Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/username" />
+              </div>
 
-            {/* Common: LinkedIn */}
-            <div className="space-y-2">
-              <Label>LinkedIn URL</Label>
-              <Input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/username" />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={saving}>
-              {saving ? 'Saving...' : 'Complete Profile'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button type="submit" className="w-full" disabled={saving}>
+                {saving ? 'Saving...' : 'Complete Profile'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 };
