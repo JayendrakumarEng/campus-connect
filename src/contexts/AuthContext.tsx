@@ -56,7 +56,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data } = await supabase.from('profiles').select('*').eq('id', authUser.id).maybeSingle();
 
     if (data) {
-      setProfile(data);
+      // If profile exists but role is missing, apply role from signup metadata
+      if (!data.role && authUser.user_metadata?.role) {
+        const metaRole = normalizeRole(authUser.user_metadata.role);
+        const { data: updated } = await supabase
+          .from('profiles')
+          .update({ role: metaRole })
+          .eq('id', authUser.id)
+          .select('*')
+          .single();
+        setProfile(updated ?? data);
+      } else {
+        setProfile(data);
+      }
       return;
     }
 
